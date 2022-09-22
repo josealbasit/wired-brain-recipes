@@ -1,13 +1,17 @@
+
 function ui_interface(selectedModel,x,x_plot,y0,f_min,f,f_plot,initParam)
 selectedModelstr=num2str(selectedModel);
 close all
 clear h
-equationName="Quadratic";
 
 graphics_toolkit qt
 
 h.ax = axes ("position", [0.05 0.42 0.5 0.5]);
 h.fcn = @(p) f([initParam]);
+%set (get (h.ax, "title"), "string", equationName);
+
+
+
 
 function update_plot (obj, init = false)
 
@@ -15,6 +19,7 @@ function update_plot (obj, init = false)
   h = guidata (obj);
   replot = false;
   recalc = false;
+
   switch (gcbo)
     case {h.print_pushbutton}
       fn =  uiputfile ("*.png");
@@ -25,42 +30,36 @@ function update_plot (obj, init = false)
     case {h.minor_grid_toggle}
       v = get (gcbo, "value");
       grid ("minor", merge (v, "on", "off"));
-    case {h.plot_title_edit}
-      v = get (gcbo, "string");
-      set (get (h.ax, "title"), "string", v);
     case {h.p1_slider}
       recalc = true;
     case {h.p2_slider}
       recalc = true;
+    case {h.p3_slider}
+      recalc = true;
   endswitch
 
   if (recalc || init)
-    p1 = get (h.p1_slider, "value");
-    p2 = get (h.p2_slider, "value");
-    set (h.p1_label, "string", sprintf ("Parameter 1", p1));
-    set (h.p2_label, "string", sprintf ("Parameter 2", p2));
-    p1
-    p2=initParam(2);
-    p3=initParam(3);
-    initParam
-    x
-    y0=f_min([initParam])
-    f(initParam)
-    [optimParam r2 errorVector errorOptim]=optimizationProcess(x,y0,f_min,f,[p1 p2 p3],2)
-    f(optimParam)
+    if(recalc)
+    p(1) = get (h.p1_slider, "value");
+    p(2) = get (h.p2_slider, "value");
+    p(3) = get (h.p3_slider, "value");
+
+    set (h.p1_label, "string", sprintf ("Parameter 1", p(1)));
+    set (h.p2_label, "string", sprintf ("Parameter 2", p(2)));
+    set (h.p3_label, "string", sprintf ("Parameter 3", p(3)));
+
+    initParam=p
+    end
+    [optimParam r2 errorOptim]=optimizationProcess(x,y0,f_min,f,initParam,1);
     y_optim_plot=f_plot(optimParam);
     if (init)
-      %h.plot = plot (x, y, "b");
-      %hold on
-      "hola"
-      initParam
-      f_plot
-      y_no_optim_plot=f_plot(initParam)
       h.plot = plot (x , y0,'+');
       hold on
-      h.plot = plot(x_plot,y_no_optim_plot,'r')
+      h.plot = plot(x_plot,y_optim_plot,'r')
       guidata (obj, h);
-    else
+    elseif(recalc)
+      h.plot = plot (x , y0,'+');
+      hold on
       h.plot=plot(x_plot, y_optim_plot,'b');
       %set (h.plot, "ydata", y);
     endif
@@ -88,9 +87,15 @@ endfunction
 
 ## plot title
 if (selectedModel==1)
-  equationName="LSS";
+  equationName="Quadratic";
 
 endif
+
+h.statistics_text = uicontrol ("style", "text",
+                                "units", "normalized",
+                                "string", equationName,
+                                "horizontalalignment", "left",
+                                "position", [0.6 0.85 0.35 0.08]);
 
 h.plot_title_label = uicontrol ("style", "text",
                                 "units", "normalized",
@@ -133,6 +138,9 @@ h.p1_label = uicontrol ("style", "text",
                            "position", [0.05 0.3 0.35 0.08]);
 
 h.p1_slider = uicontrol ("style", "slider",
+                            "Min" , -100,
+                            "Max",100,
+                            "SliderStep",[0.01 0.01],
                             "units", "normalized",
                             "string", "slider",
                             "callback", @update_plot,
@@ -148,6 +156,9 @@ h.p2_label = uicontrol ("style", "text",
                            "position", [0.05 0.15 0.35 0.08]);
 
 h.p2_slider = uicontrol ("style", "slider",
+                            "Min" , -100,
+                            "Max",100,
+                            "SliderStep",[0.01 0.01],
                             "units", "normalized",
                             "string", "slider",
                             "callback", @update_plot,
@@ -162,10 +173,13 @@ h.p3_label = uicontrol ("style", "text",
                            "position", [0.45 0.3 0.35 0.08]);
 
 h.p3_slider = uicontrol ("style", "slider",
+                            "Min" , -100,
+                            "Max",100,
+                            "SliderStep",[0.01 0.01],
                             "units", "normalized",
                             "string", "slider",
                             "callback", @update_plot,
-                            "value", initParam(2),
+                            "value", initParam(3),
                             "position", [0.45 0.25 0.35 0.06]);
 
 % p4
@@ -177,7 +191,10 @@ h.p4_label = uicontrol ("style", "text",
                            "position", [0.455 0.15 0.35 0.08]);
 
 h.p4_slider = uicontrol ("style", "slider",
-                            "units", "normalized",
+                            "Min" , -100,
+                            "Max",100,
+                            "SliderStep",[0.01 0.01],
+                           "units", "normalized",
                             "string", "slider",
                             "callback", @update_plot,
                             "value", initParam(2),

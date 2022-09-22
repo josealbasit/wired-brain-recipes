@@ -1,4 +1,4 @@
-function [optimParam r2 errorVector errorOptim]=optimizationProcess(x,y,f_min,f,initParam,optimMethod)
+function [optimParam r2 errorOptim]=optimizationProcess(x,y,f_min,f,initParam,optimMethod)
   if(optimMethod==1)%Levenberg-Marquadt Algorithm
       options=generateBounds(initParam);
       wt = ones(size(y));
@@ -8,9 +8,10 @@ function [optimParam r2 errorVector errorOptim]=optimizationProcess(x,y,f_min,f,
       if (optimMethod == 2) %NelderMeadAlgorithm
         [optimParam,fval]=fminsearch(f_min,initParam);
       elseif(optimMethod==3) %Powell algorithm
-        [optimParam, fval, conv, iters, nevs] = powell(f_min,initParam)
+        o = optimset('MaxIter', 100, 'TolFun', 1E-10, 'MaxFunEvals', 1E5);
+        [optimParam, fval, conv, iters, nevs] = powell(f_min,initParam,o)
       endif
       y_optim=f(optimParam);
   endif
-      [r2 errorVector errorOptim]=optimStatistics(y,y_optim,length(initParam));
+      [r2 errorOptim]=optimStatistics(y,y_optim,length(initParam));
   end

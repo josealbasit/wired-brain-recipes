@@ -1,16 +1,5 @@
 function R=f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel)
-  r=rand();
-  if(r> .97)
-  r
-  lim
-  p
-  a=p(:)<lim(:,1)
-  b=p(:)>lim(:,2)
-  end
   if(sum(p'<lim(:,1))>.5|sum(p'>lim(:,2))>.5)
-    1
-    lim
-    p
     R=1e32;
   else
     switch(selectedModel)

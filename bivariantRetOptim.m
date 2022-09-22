@@ -2,9 +2,7 @@ function [bestParam x z f D]=bivariantRetOptim(xRaw,zRaw,X,Y,iterRandom,selected
 %This function uses Levenberg Marquadt,NelderMead and Powell methods to optimize parameters of
 %diferent retention mathematical models. In this case, methods are bivariant, i.e, two
 %variables are needed for retention estimation: these variables are a combination of surfactant and additives, depending on the case.
-  [x,z,x1,x2,w]=checkNaN(xRaw,zRaw)
-  x
-  z
+  [x,z,x1,x2,w]=checkNaN(xRaw,zRaw);
   [f_min,f_plot,f,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selectedModel,3);
   initialParameters=generateInitialParameters(empiricalParam,iterRandom);
   l=2*length(empiricalParam)+2;
@@ -16,31 +14,29 @@ function [bestParam x z f D]=bivariantRetOptim(xRaw,zRaw,X,Y,iterRandom,selected
   empiricalParam
   for i=1:iterRandom
     initParam=randomParameters(:,i)';
-    [optimParam r2 errorVector errorOptim]=optimizationProcess(x,z,f_min,f,initParam,3)
+    [optimParam r2 errorOptim]=optimizationProcess(x,z,f_min,f,initParam,3)
     r=rand;
     if (r>.3)
     retentionBiPlot(X,Y,f_plot,initParam,optimParam,1); %Plotting results...
     endif
-    errorMatrix(i,:)=errorVector;
-    B(i,:)=[initParam optimParam errorOptim r2]; %Storing optimized values
+    B(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
   endfor
   B
    rndOptimError=find(B(:,l-1)==min(B(:,l-1)));
    t=(l-2)/2; %Number of parameters
-   estimParam=B(rndOptimError,t+1:2*t)'
-   estimParameters=generateEstimParameters(estimParam,iterRandom)
+   estimParam=B(rndOptimError,t+1:2*t)';
+   estimParameters=generateEstimParameters(estimParam,iterRandom);
    for j=1:3
    optimMethod=j;
    [f_min,f_plot,f,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selectedModel,optimMethod);
    for i=1:iterRandom
       initParam=estimParameters(:,i);
-      [optimParam r2 errorVector errorOptim]=optimizationProcess(x,z,f_min,f,initParam,optimMethod);
+      [optimParam r2 errorOptim]=optimizationProcess(x,z,f_min,f,initParam,optimMethod);
       r=rand();
       if (r>.3)
       retentionBiPlot(X,Y,f_plot,initParam,optimParam,1); %Plotting results...
       endif
-      errorMatrix(i,:)=errorVector;
-      C(i,:)=[initParam' optimParam' errorOptim r2]; %Storing optimized values
+      C(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
     endfor
     D=[D;C]
     endfor
