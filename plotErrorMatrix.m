@@ -1,4 +1,6 @@
 function plotErrorMatrix(optimData,pos)
+  colors=['g' 'b' 'c' 'm'];
+  colors=[colors colors colors colors];
   if(length(size(optimData))==2)
   l=1;
   optimData(:,:,1)=optimData(:,:);
@@ -12,15 +14,23 @@ function plotErrorMatrix(optimData,pos)
   plot(z_col,z0,'+')
   hold on
   for j=1:l
-    errorMatrix(:,:)=[optimData(1:end-pos(j),1,j)-optimData(1:end-pos(j),2:end,j)]./optimData(1:end-pos(j),1,j)(:)
-    soluteLabel=mean([min(optimData(:,1,j)) max(optimData(:,1,j))]);
-    label=["Solute " num2str(j)];
-    a=max(max(errorMatrix));
-    text(soluteLabel,1.5*a,label);
+    errorMatrix(:,:)=[optimData(1:end-pos(j),1,j)-optimData(1:end-pos(j),2:end,j)]./mean(optimData(1:end-pos(j),1,j)(:));
+    minim=min(min(errorMatrix(:,:)));
+    maxim=max(max(errorMatrix(:,:)));
+    dim=find(abs(errorMatrix)>1000); %bounding values [-1000,1000]
+    if(length(dim)>1)
+    infCols=unique(errorMatrix(dim(2)));% Colums bigger that contain a prediction bigger than 1000
+    errorMatrix(:,infCols)=[];
+    endif 
     for i=1:size(errorMatrix)(2)
-      plot(optimData(1:end-pos(j),1,j),errorMatrix(:,i),'o');
+      plot(optimData(1:end-pos(j),1,j),errorMatrix(:,i),[colors(j) 'o']);
       hold on
     endfor
+    soluteLabel=mean([min(min(optimData(:,:,j))) max((optimData(:,:,j)))])
+    maxim
+    label=["Solute " num2str(j)];
+    text(soluteLabel,0.95*maxim,label,'fontsize',12,'fontweight','bold');
+    hold on
  endfor
   xlabel("Retention")
   ylabel("Error in prediction")
