@@ -1,4 +1,8 @@
 function plotErrorMatrix(optimData,pos)
+  if(length(size(optimData))==2)
+  l=1;
+  optimData(:,:,1)=optimData(:,:);
+  else
   l=size(optimData)(3);
   z_col=optimData(:,1,:)(:);
   z0=zeros(1,length(z_col));

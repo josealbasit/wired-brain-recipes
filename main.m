@@ -20,6 +20,7 @@ function main()
     if(modelType==1)
          [xRaw,x_plot,iterRandom] = defOptimConstUni(A);
          for i=1:size(solutesRaw)(2)
+            i
            [bestParam,x,y,f,D]=univariantRetOptim(xRaw,solutesRaw(:,i),x_plot,iterRandom,selectedModel,optimMethod);
            paramMatrix(:,i)=bestParam(:)';
            [data,l]=prepareComparation(n,f,y,D)

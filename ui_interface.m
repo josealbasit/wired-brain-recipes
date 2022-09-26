@@ -1,4 +1,3 @@
-
 function ui_interface(selectedModel,x,x_plot,y0,f_min,f,f_plot,initParam)
 selectedModelstr=num2str(selectedModel);
 close all
@@ -26,7 +25,7 @@ function update_plot (obj, init = false)
       fn =  uiputfile ("*.png");
       print (fn);
     case{h.save_pushbotton}
-      
+
     case {h.p1_slider}
       recalc = true;
     case {h.p2_slider}
@@ -92,7 +91,7 @@ if (selectedModel==1)
 
 endif
 
-##Label 
+##Label
 
 
 h.label = uicontrol ("style", "text",
@@ -108,7 +107,7 @@ h.print_pushbutton = uicontrol ("style", "pushbutton",
                                 "string", "Save plot",
                                 "callback", @update_plot,
                                 "position", [0.6 0.45 0.35 0.09]);
-                                
+
 # Save parameters
                                 h.save_pushbotton = uicontrol ("style", "pushbutton",
                                 "units", "normalized",
@@ -146,7 +145,7 @@ h.p2_slider = uicontrol ("style", "slider",
                             "SliderStep",[0.01 0.01],
                             "units", "normalized",
                             "string", "slider",
-                            "callback",s,
+                            "callback",@update_plot,
                             "value", initParam(2),
                             "position", [0.05 0.1 0.35 0.06]);
 % p3
@@ -169,7 +168,7 @@ h.p3_slider = uicontrol ("style", "slider",
 
 h.statistics = uicontrol ("style", "text",
                            "units", "normalized",
-                           "string", "Statistics",
+                           "string", "STATISTICS:",
                            "fontweight","bold",
                            "horizontalalignment", "left",
                            "position", [0.6 0.85 0.2 0.1]);

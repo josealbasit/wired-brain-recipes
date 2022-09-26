@@ -8,7 +8,7 @@ function [optimParam r2 errorOptim]=optimizationProcess(x,y,f_min,f,initParam,op
       if (optimMethod == 2) %NelderMeadAlgorithm
         [optimParam,fval]=fminsearch(f_min,initParam);
       elseif(optimMethod==3) %Powell algorithm
-        o = optimset('MaxIter', 100, 'TolFun', 1E-10, 'MaxFunEvals', 1E5);
+        o = optimset('MaxIter', 150, 'TolFun', 1E-10, 'MaxFunEvals', 1E5);
         [optimParam, fval, conv, iters, nevs] = powell(f_min,initParam,o)
       endif
       y_optim=f(optimParam);
