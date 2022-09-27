@@ -15,7 +15,6 @@ function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,x_plot,iterRandom,sele
     if(r>.90)
     retentionUniPlot(x,y,x_plot,f,f_plot,initParam,optimParam,1); %Plotting results...
   end
-  errorOptim
     B(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
    endfor
    rndOptimError=find(B(:,l-1)==min(B(:,l-1)));
@@ -37,7 +36,7 @@ function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,x_plot,iterRandom,sele
     end
       C(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
     endfor
-    D=[D;C]
+    D=[D;C];
    endfor
    posOptimError=find(D(:,l-1)==min(D(:,l-1)));
    if(posOptimError>1)
