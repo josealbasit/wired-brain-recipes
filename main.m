@@ -23,22 +23,22 @@ function main()
          for i=1:size(solutesRaw)(2)
            [bestParam,x,y,f,D]=univariantRetOptim(xRaw,solutesRaw(:,i),x_plot,iterRandom,selectedModel,optimMethod);
            paramMatrix(:,i)=bestParam(:)';
-           [data,l]=prepareComparation(n,f,y,D)
+           [data,l]=prepareComparation(n,f,x,y,D)
            optimData(:,:,i)=data;
            pos(i)=l;
+           x(:)'
            X(:,i)=[x(:)' zeros(1,l)];
            Y(:,i,1)=[y(:)' zeros(1,l)];
-
          endfor
          comparation(n,optimData,pos);
          plotErrorMatrix(optimData,pos);
-         plotOptimization
+         plotOptimization(X,Y,f,paramMatrix,pos);
     elseif(modelType==2)
       for i=1:size(solutesRaw)(2)
          [xRaw,X,Y,iterRandom] = defOptimConstBi(A); %Defining constants for optimization calculation and plotting...
          [bestParam x z f D]=bivariantRetOptim(xRaw,solutesRaw(:,i),X,Y,iterRandom,selectedModel,optimMethod);
          paramMatrix(:,i)=bestParam';
-         [data,l]=prepareComparation(n,f,z,D);
+         [data,l]=prepareComparation(n,f,x,z,D);
          optimData(:,:,i)=data;
          pos(i)=l;
       endfor
@@ -46,7 +46,6 @@ function main()
       plotErrorMatrix(optimData,pos);
       plotOptimization
     endif
-    paramMatrix
     answer=questdlg("Do you want to enter a MANUAL estimation of initial parameters and perform an optimization?");
     if (length(answer)== 3)
       manualParam=manualParameters(A,selectedModel,modelType,paramMatrix(:,i));

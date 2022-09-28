@@ -18,7 +18,7 @@ function [optimParam r2 errorOptim]=optimizationProcess(x,y,f_min,f,initParam,op
         o = optimset('MaxIter', 150, 'TolFun', 1E-10, 'MaxFunEvals', 1E6);
         [optimParam, fval, conv, iters, nevs] = powell(f_min,initParam,o)
       endif
-      y_optim=f(optimParam);
+      y_optim=f(x,optimParam);
   endif
       if(exception==true)
       r2=0;

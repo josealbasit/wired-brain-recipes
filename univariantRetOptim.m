@@ -1,6 +1,6 @@
 function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,x_plot,iterRandom,selectedModel,optimMethod)
    [x,y]=checkNaN(xRaw,yRaw);
-   [f_min,f,f_plot,empiricalParam]=prepareUniModel(x,y,x_plot,selectedModel,3) %Choosing retention model...
+   [f_min,f,empiricalParam]=prepareUniModel(x,y,x_plot,selectedModel,3) %Choosing retention model...
    l=2*length(empiricalParam)+2;
    B=zeros(iterRandom,l);%This matrix will store different initial and optim Parameters along with their associated optimization results: relative error and R^2.
    C=zeros(iterRandom,l);
@@ -13,7 +13,7 @@ function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,x_plot,iterRandom,sele
     [optimParam r2 errorOptim]=optimizationProcess(x,y,f_min,f,initParam,3);
     r=rand;
     if(r>.90)
-    retentionUniPlot(x,y,x_plot,f,f_plot,initParam,optimParam,1); %Plotting results...
+    retentionUniPlot(x,y,x_plot,f,initParam,optimParam,1); %Plotting results...
   end
     B(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
    endfor
@@ -26,13 +26,13 @@ function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,x_plot,iterRandom,sele
    estimParameters=generateEstimParameters(estimParam,iterRandom);
    for j=1:3
     optimMethod=j;
-    [f_min,f,f_plot,empiricalParam]=prepareUniModel(x,y,x_plot,selectedModel,optimMethod); %Choosing retention model...
+    [f_min,f,empiricalParam]=prepareUniModel(x,y,x_plot,selectedModel,optimMethod); %Choosing retention model...
     for i=1:iterRandom
       initParam=estimParameters(:,i);
       [optimParam r2 errorOptim]=optimizationProcess(x,y,f_min,f,initParam,optimMethod)
-      r=rand()
+      r=rand();
       if (r>.9)
-      retentionUniPlot(x,y,x_plot,f,f_plot,initParam,optimParam,1); %Plotting results...
+      retentionUniPlot(x,y,x_plot,f,initParam,optimParam,1); %Plotting results...
     end
       C(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
     endfor
