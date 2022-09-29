@@ -1,5 +1,5 @@
-function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,x_plot,iterRandom,selectedModel,optimMethod)
-   [x,y]=checkNaN(xRaw,yRaw);
+function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,iterRandom,selectedModel,optimMethod)
+   [x,y,x_plot]=checkNaN(xRaw,yRaw);
    [f_min,f,empiricalParam]=prepareUniModel(x,y,x_plot,selectedModel,3) %Choosing retention model...
    l=2*length(empiricalParam)+2;
    B=zeros(iterRandom,l);%This matrix will store different initial and optim Parameters along with their associated optimization results: relative error and R^2.
@@ -17,9 +17,10 @@ function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,x_plot,iterRandom,sele
   end
     B(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
    endfor
-   rndOptimError=find(B(:,l-1)==min(B(:,l-1)));
+   B
+   rndOptimError=find(B(:,l)==max(B(:,l)))
    t=(l-2)/2;
-   estimParam=B(rndOptimError,t+1:2*t)';
+   estimParam=B(rndOptimError,t+1:2*t)'
    else
    estimParam=empiricalParam';
    endif
@@ -38,10 +39,11 @@ function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,x_plot,iterRandom,sele
    endfor
      D=[D;C];
    endfor
-   posOptimError=find(D(posOptimError,l)==max(D(posOptimError,l)));
+   D
+   posOptimError=find(D(:,l)==max(D(:,l)))
    if(posOptimError>1)
-   posOptimError=find(D(:,l-1)==min(D(:,l-1)));
+   posOptimError=find(D(posOptimError,l-1)==min(D(posOptimError,l-1)));
    end
-   bestParam=D(posOptimError,:)';
+   bestParam=D(posOptimError,:)'
  end
 

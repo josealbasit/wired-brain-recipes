@@ -2,7 +2,7 @@ function main()
   packages(); %Loading forge packages...
   selectNewData=true;
   while (selectNewData==true) %While we want to optimize new data...
-    [modelType,changeRetModel,selectNewData,counterModel,compound,counterData,bestError,optimMethod,optimData,solutes] = mainConstants(); %Initial constants...
+    [modelType,changeRetModel,selectNewData,counterModel,compound,counterData,bestError,optimMethod,optimData,solutes,removeData] = mainConstants(); %Initial constants...
     [initialDir, desktopDir]=directories(); %Directories...
     while (modelType == 0)
       [fileName, filePath]=introRetentionData(desktopDir); %Get file name and path...
@@ -14,25 +14,51 @@ function main()
 %optimize parameters.
     while (changeRetModel == true)
     selectedModel=chooseModel(modelType);
-    %optimMethod=menu("Select an optimization method:","Levenberg-Marquadt","Nelder-Mead","Powell");
-    solutesRaw=separateSolutes(A,modelType)
-    solutesRaw
+    solutesRaw=separateSolutes(A,modelType);
     n=size(solutesRaw)(1)
     if(modelType==1)
-         [xRaw,x_plot,iterRandom] = defOptimConstUni(A);
+         [xRaw,iterRandom]=defOptimConstUni(A);
          for i=1:size(solutesRaw)(2)
-           [bestParam,x,y,f,D]=univariantRetOptim(xRaw,solutesRaw(:,i),x_plot,iterRandom,selectedModel,optimMethod);
-           paramMatrix(:,i)=bestParam(:)';
+           [bestParam,x,y,f,D]=univariantRetOptim(xRaw,solutesRaw(:,i),iterRandom,selectedModel,optimMethod);
+           paramMatrix(:,i)=bestParam(:)';%Matrix containing different parameters of the optimized values.
            [data,l]=prepareComparation(n,f,x,y,D)
            optimData(:,:,i)=data;
            pos(i)=l;
-           x(:)'
            X(:,i)=[x(:)' zeros(1,l)];
            Y(:,i,1)=[y(:)' zeros(1,l)];
          endfor
+         B.autoOptimization=paramMatrix;
          comparation(n,optimData,pos);
          plotErrorMatrix(optimData,pos);
-         plotOptimization(X,Y,f,paramMatrix,pos);
+         [Xnew,Ynew,keepX]=plotOptimization(X,Y,f,paramMatrix,pos);
+         out=isempty(find(keepX==0));
+         counterRem=1;%Counter for removed data cycles
+         while(out==0) %User has selected points to remove and perform optimization
+            Xnew(Xnew==0)=NaN; %Now we perform the loop again
+            Ynew(Ynew==0)=NaN;
+            removeData=true;
+            Xnew
+            Ynew
+            [m,n]=size(Xnew)
+            clear X,Y,paramMatrix;
+            for i=1:n
+                [bestParam,x,y,f,D]=univariantRetOptim(Xnew(:,i),Ynew(:,i),iterRandom,selectedModel,optimMethod);
+                B.autoRemovedOptimization(:,i,counterRem)=bestParam';
+                [data2,l2]=prepareComparation(m,f,x,y,D);
+                X(:,i)=[x(:)' zeros(1,l2)];
+                Y(:,i,1)=[y(:)' zeros(1,l2)];
+                optimData2(:,:,i)=data2;
+                pos2(i)=l2;
+            endfor
+            n
+            optimData2
+            pos2
+         comparation(m,optimData2,pos2);
+         plotErrorMatrix(optimData2,pos2);
+         [Xnew,Ynew,keepX]=plotOptimization(X,Y,f,B.autoRemovedOptimization(:,:,counterRem),pos2);
+         counterRem=counterRem+1;
+         endwhile
+         %Here data should be saved in case removing points is not helpful for optimization improvement
     elseif(modelType==2)
       for i=1:size(solutesRaw)(2)
          [xRaw,X,Y,iterRandom] = defOptimConstBi(A); %Defining constants for optimization calculation and plotting...
@@ -44,7 +70,7 @@ function main()
       endfor
       comparation(n,optimData,pos);
       plotErrorMatrix(optimData,pos);
-      plotOptimization
+      [Xnew,keepX]=plotOptimization
     endif
     answer=questdlg("Do you want to enter a MANUAL estimation of initial parameters and perform an optimization?");
     if (length(answer)== 3)

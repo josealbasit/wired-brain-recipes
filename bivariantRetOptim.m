@@ -2,7 +2,7 @@ function [bestParam x z f D]=bivariantRetOptim(xRaw,zRaw,X,Y,iterRandom,selected
 %This function uses Levenberg Marquadt,NelderMead and Powell methods to optimize parameters of
 %diferent retention mathematical models. In this case, methods are bivariant, i.e, two
 %variables are needed for retention estimation: these variables are a combination of surfactant and additives, depending on the case.
-  [x,z,x1,x2,w]=checkNaN(xRaw,zRaw);
+  [x,z,x_plot,x1,x2,w]=checkNaN(xRaw,zRaw);
   [f_min,f_plot,f,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selectedModel,3);
   initialParameters=generateInitialParameters(empiricalParam,iterRandom);
   l=2*length(empiricalParam)+2;
@@ -10,8 +10,7 @@ function [bestParam x z f D]=bivariantRetOptim(xRaw,zRaw,X,Y,iterRandom,selected
   C=zeros(iterRandom,l);
   D=zeros(0,0);
   %Now we generate random parameters
-  randomParameters=generateRandomParameters(empiricalParam,iterRandom)
-  empiricalParam
+  randomParameters=generateRandomParameters(empiricalParam,iterRandom);
   for i=1:iterRandom
     initParam=randomParameters(:,i)';
     [optimParam r2 errorOptim]=optimizationProcess(x,z,f_min,f,initParam,3)

@@ -11,5 +11,4 @@ function [data,l]=prepareComparation(n,f,x,z,D)
      l=n-length(z);
      data=[data;zeros(l,size(data)(2))];
   end
-
 end

@@ -1,6 +1,7 @@
 function [f_min,f,empiricalParam]=prepareUniModel(x,y,x_plot,selectedModel,optimMethod)
    f_min=0;f=0;
    %Choosing retention model...
+   selectedModel
    switch (selectedModel)
      case 1 %Equation 1
        f=@(x,p)p(1).*exp(-x.*p(2));
@@ -36,7 +37,10 @@ function [f_min,f,empiricalParam]=prepareUniModel(x,y,x_plot,selectedModel,optim
       f=@(x,p) [p(1).*(1+p(3).*x).^2].*exp(-(p(2).*(x./(1+p(3).*x))));
       coef=flip(polyfit(x,log(y),2));
       empiricalParam(1)=exp(coef(1)); empiricalParam(2)=-coef(2); empiricalParam(3)=-coef(3)/coef(2);
-      lim=limits(empiricalParam);
+      %lim=limits(empiricalParam);
+      lim=[-1 300;
+            0 5000;
+            0 50000];
       if (optimMethod==1)
         f_min=@(x,p) [p(1).*(1+p(3).*x).^2].*exp(-(p(2).*(x./(1+p(3).*x))));
       else
