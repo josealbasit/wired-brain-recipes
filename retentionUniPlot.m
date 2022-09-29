@@ -1,7 +1,7 @@
-function retentionUniPlot(x,y,x_plot,f,f_plot,initParam,optimParam,clearfig) %This function plots a comparative graphic between optimized and non-optimized models.
+function retentionUniPlot(x,y,x_plot,f,initParam,optimParam,clearfig) %This function plots a comparative graphic between optimized and non-optimized models.
 
-   y_no_optim_plot=f_plot(initParam);
-   y_optim_plot=f_plot(optimParam);
+   y_no_optim_plot=f(x_plot,initParam);
+   y_optim_plot=f(x_plot,optimParam);
    subplot(1,2,1);
    plot(x,y,'o')
    hold on

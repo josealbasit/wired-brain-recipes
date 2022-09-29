@@ -2,6 +2,6 @@ function [x,x_plot,iterRandom,errorMatrix] = defOptimConstUni(A) %Defines optimi
    x=A(:,1);
    eps=(x(end)-x(1))/8;
    x_plot=linspace(x(1)-eps,x(end)+eps,100); %x coordinate to plot discrete data
-   iterRandom=4;
+   iterRandom=5;
    errorMatrix=zeros(3*10+3,rows(A));%Error matrix to perform outlier detection later on
   end

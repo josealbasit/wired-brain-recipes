@@ -2,7 +2,7 @@ function bestParam=manualOptimization(A,manualParam,selectedModel,modelType)
  l=2*length(manualParam)+2;
  C=zeros(3,l);
  if(modelType==1)
- [x,y,x_plot,iter,iterRandom]=defOptimConstUni(A);
+ [x,y,x_plot,iterRandom,errorMatrix]=defOptimConstUni(A);
  for j=1:3
    optimMethod=j;
    [f_min,f,f_plot,empiricalParam]=prepareUniModel(x,y,x_plot,selectedModel,optimMethod); %Choosing retention model...
