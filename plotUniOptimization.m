@@ -1,31 +1,25 @@
-function [Xnew,Ynew,keepX,out]=plotOptimization(X,Y,f,f_plot,paramMatrix,pos)
+function [Xnew,Ynew,keepX,out]=plotUniOptimization(X,Y,f,paramMatrix,pos)
    out=false;
-   removeData=true;
    m=(size(paramMatrix)(1)-2)/2;
    optimParam=paramMatrix(m+1:2*m,:)
-   n=size(X)(2);%Number of solutes
+   n=size(X)(2)%Number of solutes
    point=zeros(0,2);
-   keepX=ones(size(xRaw));
-   solLabels=cell(n,1);
-   for i=1:n
-     solLabels{i,1}= ["Solute " num2str(i)];
-   endfor
-   while(removeData==true)
-   R=menu("Remove data from:",solLabels);
-   h=figure(1,"position",get(0,"screensize")([3,4,3,4]).*[0 0.1 0.9 0.8])
-   subplot(2,1,1)
-   contourf(X,Y,f_plot(optimParam(:,R)));
-   hold on
-   scatter3(xRaw(:,1),xRaw(:,2),z, 'r+')
-   subplot(2,1,2)
-   surf(X,Y,f_plot(optimParam(:,R)));
-   title("Select data from left-hand side plot to perform new optimization");
-
-
-   endwhile
-
-
-
+   keepX=ones(size(X));
+   %Show plots inside the subplot depending on the number of solutes..
+   if(n==1)
+   j=1;%number of rows
+   k=1;%number of columns
+   elseif(n==2)
+   j=1;
+   k=2;
+   elseif(n>2 && rem(n,2)==1)
+   j=2;
+   k=(n+1)/2;
+   elseif(n>2 && rem(n,2)==0)
+   j=2;
+   k=n/2;
+ endif
+ h=figure(1,"position",get(0,"screensize")([3,4,3,4]).*[0 0.1 0.9 0.8])
    for i=1:n
     l=pos(i);
     keepX(end-l+1:end,i)=NaN;

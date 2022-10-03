@@ -17,12 +17,14 @@ function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,iterRandom,selectedMod
   end
     B(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
    endfor
-   B
    rndOptimError=find(B(:,l)==max(B(:,l)))
    t=(l-2)/2;
-   estimParam=B(rndOptimError,t+1:2*t)'
+   if(rndOptimError>1)
+   rndOptimError=find(B(rndOptimError,l-1)==min(B(rndOptimError,l-1)));
+   end
+   estimParam=B(rndOptimError(1),t+1:2*t)'
    else
-   estimParam=empiricalParam';
+   estimParam=empiricalParam(:)';
    endif
    estimParameters=generateEstimParameters(estimParam,iterRandom);
    for j=1:3
@@ -44,6 +46,6 @@ function [bestParam,x,y,f,D]=univariantRetOptim(xRaw,yRaw,iterRandom,selectedMod
    if(posOptimError>1)
    posOptimError=find(D(posOptimError,l-1)==min(D(posOptimError,l-1)));
    end
-   bestParam=D(posOptimError,:)'
+   bestParam=D(posOptimError(1),:)';
  end
 

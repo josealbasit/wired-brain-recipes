@@ -8,7 +8,7 @@ function [optimParam r2 errorOptim]=optimizationProcess(x,y,f_min,f,initParam,op
       [y_optim, optimParam, kvg1, iter1, corp1, covp1, covr1, stdresid1, Z1, r2] = leasqr(x, y, initParam, f_min,0.00000001, 200, wt, 0.001 * ones (size (initParam)), "dfdp", options); %Applying leasqr () to desired function...
       catch
       optimParam=zeros(1,length(initParam));
-      exception=true
+      exception=true;
       disp("An error ocurred in the optimization process... searching new initial parameters...");
       end_try_catch
   elseif(optimMethod > 1)
@@ -16,7 +16,7 @@ function [optimParam r2 errorOptim]=optimizationProcess(x,y,f_min,f,initParam,op
         [optimParam,fval]=fminsearch(f_min,initParam);
       elseif(optimMethod==3) %Powell algorithm
         o = optimset('MaxIter', 150, 'TolFun', 1E-10, 'MaxFunEvals', 1E6);
-        [optimParam, fval, conv, iters, nevs] = powell(f_min,initParam,o)
+        [optimParam, fval, conv, iters, nevs] = powell(f_min,initParam,o);
       endif
       y_optim=f(x,optimParam);
   endif

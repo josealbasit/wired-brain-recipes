@@ -3,7 +3,7 @@ function [bestParam x z f D]=bivariantRetOptim(xRaw,zRaw,X,Y,iterRandom,selected
 %diferent retention mathematical models. In this case, methods are bivariant, i.e, two
 %variables are needed for retention estimation: these variables are a combination of surfactant and additives, depending on the case.
   [x,z,x_plot,x1,x2,w]=checkNaN(xRaw,zRaw);
-  [f_min,f_plot,f,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selectedModel,3);
+  [f_min,f,f_plot,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selectedModel,3);
   initialParameters=generateInitialParameters(empiricalParam,iterRandom);
   l=2*length(empiricalParam)+2;
   B=zeros(iterRandom,l);%This matrix will store different initial and optim Parameters along with their associated optimization results: relative error and R^2.
@@ -26,7 +26,7 @@ function [bestParam x z f D]=bivariantRetOptim(xRaw,zRaw,X,Y,iterRandom,selected
    estimParameters=generateEstimParameters(estimParam,iterRandom);
    for j=1:3
    optimMethod=j;
-   [f_min,f_plot,f,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selectedModel,optimMethod);
+   [f_min,f,f_plot,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selectedModel,optimMethod);
    for i=1:iterRandom
       initParam=estimParameters(:,i);
       [optimParam r2 errorOptim]=optimizationProcess(x,z,f_min,f,initParam,optimMethod);
