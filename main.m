@@ -24,8 +24,8 @@ function main()
            [data,l]=prepareComparation(n,f,x,y,D)
            optimData(:,:,i)=data;
            pos(i)=l;
-           X(:,i)=[x(:)' zeros(1,l)];
-           Y(:,i,1)=[y(:)' zeros(1,l)];
+           Xall(:,i)=[x(:)' zeros(1,l)];
+           Yall(:,i,1)=[y(:)' zeros(1,l)];
          endfor
          B.autoOptimization=paramMatrix;
          comparation(n,optimData,pos);
@@ -36,34 +36,37 @@ function main()
             Xnew(Xnew==0)=NaN; %Now we perform the loop again
             Ynew(Ynew==0)=NaN;
             [m,n]=size(Xnew);
-            clear X Y optimData2 pos2
+            clear Xall Yall optimData2 pos2
             for i=1:n
                 [bestParam,x,y,f,D]=univariantRetOptim(Xnew(:,i),Ynew(:,i),iterRandom,selectedModel,optimMethod);
                 B.autoRemovedOptimization(:,i,counterRem)=bestParam';
                 [data2,l2]=prepareComparation(m,f,x,y,D);
-                X(:,i)=[x(:)' zeros(1,l2)];
-                Y(:,i,1)=[y(:)' zeros(1,l2)];
+                Xall(:,i)=[x(:)' zeros(1,l2)];
+                Yall(:,i,1)=[y(:)' zeros(1,l2)];
                 optimData2(:,:,i)=data2;
                 pos2(i)=l2;
             endfor
          comparation(m,optimData2,pos2);
          plotErrorMatrix(optimData2,pos2);
-         [Xnew,Ynew,keepX,out]=plotUniOptimization(X,Y,f,B.autoRemovedOptimization(:,:,counterRem),pos2);
+         [Xnew,Ynew,keepX,out]=plotUniOptimization(Xall,Yall,f,B.autoRemovedOptimization(:,:,counterRem),pos2);
          counterRem=counterRem+1;
          endwhile
          %Here data should be saved in case removing points is not helpful for optimization improvement
     elseif(modelType==2)
       for i=1:size(solutesRaw)(2)
-         [xRaw,X,Y,iterRandom] = defOptimConstBi(A); %Defining constants for optimization calculation and plotting...
-         [bestParam x z f D]=bivariantRetOptim(xRaw,solutesRaw(:,i),X,Y,iterRandom,selectedModel,optimMethod);
+         [xRaw,X,Z,iterRandom] = defOptimConstBi(A); %Defining constants for optimization calculation and plotting...
+         [bestParam x z f D]=bivariantRetOptim(xRaw,solutesRaw(:,i),X,Z,iterRandom,selectedModel,optimMethod);
          paramMatrix(:,i)=bestParam';
          [data,l]=prepareComparation(n,f,x,z,D);
+         Xall(:,i,2)=x(:,1);%Concentration 
+         Xall(:,i,2)=x(:,2);%Additive
+         Zall=(:,i);
          optimData(:,:,i)=data;
          pos(i)=l;
       endfor
       comparation(n,optimData,pos);
       plotErrorMatrix(optimData,pos);
-      [Xnew,Ynew,keepX,out]=plotBiOptimization(xRaw,X,Y);
+      [Xnew,Ynew,keepX,out]=plotOptimization(X,Y,Xall,Zall);
     endif
     answer=questdlg("Do you want to enter a MANUAL estimation of initial parameters and perform an optimization?");
     if (length(answer)== 3)

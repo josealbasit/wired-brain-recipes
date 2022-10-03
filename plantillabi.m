@@ -28,7 +28,7 @@ xRaw(:,1)=[0.3500
 0.0500
 0.0000];
 
-[X,Y]=meshgrid(X,Y);
+[X,Y]=meshgrid(xRaw(:,1),xRaw(:,2));
 
 f=X.^2+Y.^2;
 
