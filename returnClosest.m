@@ -2,14 +2,7 @@
 function  position=returnClosest(w,I)  %w vector vertical. I vector de elementos.
           n=length(w);
           m=length(I);
-          position=zeros(1,m);
-            for i=1:m
-                dist= abs(w-I(i));
-                minim=min(dist);
-                p=find(dist==minim);
-                if length(p)>1
-                   p=p(2); %Solución temporal: más cercano a t_R para que calcule bien la distancia.
-                endif
-                position(i)=p;
-            end
+          dist= abs(w-I);
+          minim=min(dist);
+          position=find(dist==minim);
  end

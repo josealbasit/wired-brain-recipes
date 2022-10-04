@@ -12,7 +12,7 @@ function main()
     endwhile
 %Until now, we have selected the data file. Now we need an equation to model the data and an optimization method to
 %optimize parameters.
-    while (changeRetModel == true)
+    while (changeRetModel==true)
     selectedModel=chooseModel(modelType);
     solutesRaw=separateSolutes(A,modelType);
     n=size(solutesRaw)(1)
@@ -30,11 +30,9 @@ function main()
          B.autoOptimization=paramMatrix;
          comparation(n,optimData,pos);
          plotErrorMatrix(optimData,pos);
-         [Xnew,Ynew,keepX,out]=plotUniOptimization(X,Y,f,paramMatrix,pos);
+         [Xnew,Ynew,keepX,out]=plotUniOptimization(Xall,Yall,f,paramMatrix,pos);
          counterRem=1;%Counter for removed data cycles
          while(out==false) %User has selected points to remove and perform optimization
-            Xnew(Xnew==0)=NaN; %Now we perform the loop again
-            Ynew(Ynew==0)=NaN;
             [m,n]=size(Xnew);
             clear Xall Yall optimData2 pos2
             for i=1:n
@@ -55,18 +53,42 @@ function main()
     elseif(modelType==2)
       for i=1:size(solutesRaw)(2)
          [xRaw,X,Z,iterRandom] = defOptimConstBi(A); %Defining constants for optimization calculation and plotting...
-         [bestParam x z f D]=bivariantRetOptim(xRaw,solutesRaw(:,i),X,Z,iterRandom,selectedModel,optimMethod);
+         [bestParam x z f f_plot D]=bivariantRetOptim(xRaw,solutesRaw(:,i),X,Z,iterRandom,selectedModel,optimMethod);
          paramMatrix(:,i)=bestParam';
-         [data,l]=prepareComparation(n,f,x,z,D);
-         Xall(:,i,2)=x(:,1);%Concentration 
-         Xall(:,i,2)=x(:,2);%Additive
-         Zall=(:,i);
+         [data,l]=prepareComparation(n,f,x,z,D)
+         Xall(:,i,1)=[x(:,1)' zeros(1,l)];%Concentration
+         Xall(:,i,2)=[x(:,2)' zeros(1,l)];%Additive
+         Zall(:,i)=[z(:)' zeros(1,l)];
          optimData(:,:,i)=data;
          pos(i)=l;
       endfor
+      B.autoOptimization=paramMatrix;
       comparation(n,optimData,pos);
       plotErrorMatrix(optimData,pos);
-      [Xnew,Ynew,keepX,out]=plotOptimization(X,Y,Xall,Zall);
+      [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos)
+      counterRem=1;%Counter for removed data cycles
+      while(out==false)
+      m=size(Xnew)(1)
+      n=size(Xnew)(2)
+      Xnew
+      clear Xall Zall optimData pos
+      for i=1:n
+         [xRaw,X,Z,iterRandom] = defOptimConstBi([Xnew(:,i,1)(:) Xnew(:,i,2)(:)]); %Defining constants for optimization calculation and plotting...
+         [bestParam x z f f_plot D]=bivariantRetOptim(xRaw,Znew(:,i),X,Z,iterRandom,selectedModel,optimMethod);
+         paramMatrix(:,i)=bestParam';
+         [data,l]=prepareComparation(n,f,x,z,D)
+         Xall(:,i,1)=[x(:,1)' zeros(1,l)];%Concentration
+         Xall(:,i,2)=[x(:,2)' zeros(1,l)];%Additive
+         Zall(:,i)=[z(:)' zeros(1,l)];
+         optimData(:,:,i)=data;
+         pos(i)=l;
+      endfor
+      B.autoRemovedOptimization=paramMatrix;
+      comparation(n,optimData,pos);
+      plotErrorMatrix(optimData,pos);
+      [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos)
+      counterRem=1;%Counter for removed data cycles
+      endwhile
     endif
     answer=questdlg("Do you want to enter a MANUAL estimation of initial parameters and perform an optimization?");
     if (length(answer)== 3)
@@ -80,8 +102,11 @@ function main()
         counterModel=counterModel+1;
         clear paramMatrix;
       case 2 %Change data and start again...
+        clear all;
         changeRetModel=false;
         counterModel=0;
+        selectNewData=true;
+        packages();
         close all;
       case 3 %Close program...
         changeRetModel=false;

@@ -65,7 +65,7 @@ function [Xnew,Ynew,keepX,out]=plotUniOptimization(X,Y,f,paramMatrix,pos)
   endwhile
     Xnew=X.*keepX;
     Ynew=Y.*keepX;
-    if(isempty(keepX(keepX==0)))
+    if(isempty(keepX(keepX==0)))%If zero data has been removed, we end the loop
       out=true;
     else
       Xnew(Xnew==0)=NaN; %Now we perform the loop again
