@@ -1,8 +1,9 @@
-function main()
+function [B]=main()
   packages(); %Loading forge packages...
   selectNewData=true;
   while (selectNewData==true) %While we want to optimize new data...
     [modelType,changeRetModel,selectNewData,counterModel,compound,counterData,bestError,optimMethod,optimData,solutes,removeData] = mainConstants(); %Initial constants...
+    paramMatrix=zeros(0,0);
     [initialDir, desktopDir]=directories(); %Directories...
     while (modelType == 0)
       [fileName, filePath]=introRetentionData(desktopDir); %Get file name and path...
@@ -16,16 +17,17 @@ function main()
     selectedModel=chooseModel(modelType);
     solutesRaw=separateSolutes(A,modelType);
     n=size(solutesRaw)(1)
+    numberSol=1:n;
     if(modelType==1)
          [xRaw,iterRandom]=defOptimConstUni(A);
          for i=1:size(solutesRaw)(2)
            [bestParam,x,y,f,D]=univariantRetOptim(xRaw,solutesRaw(:,i),iterRandom,selectedModel,optimMethod);
            paramMatrix(:,i)=bestParam(:)';%Matrix containing different parameters of the optimized values.
-           [data,l]=prepareComparation(n,f,x,y,D)
+           [data,l]=prepareComparation(n,f,x,y,D);
            optimData(:,:,i)=data;
            pos(i)=l;
-           Xall(:,i)=[x(:)' zeros(1,l)];
-           Yall(:,i,1)=[y(:)' zeros(1,l)];
+           Xall(:,i)=[x(:)' nan(1,l)];
+           Yall(:,i,1)=[y(:)' nan(1,l)];
          endfor
          B.autoOptimization=paramMatrix;
          comparation(n,optimData,pos);
@@ -39,12 +41,12 @@ function main()
                 [bestParam,x,y,f,D]=univariantRetOptim(Xnew(:,i),Ynew(:,i),iterRandom,selectedModel,optimMethod);
                 B.autoRemovedOptimization(:,i,counterRem)=bestParam';
                 [data2,l2]=prepareComparation(m,f,x,y,D);
-                Xall(:,i)=[x(:)' zeros(1,l2)];
-                Yall(:,i,1)=[y(:)' zeros(1,l2)];
+                Xall(:,i)=[x(:)' nan(1,l2)];
+                Yall(:,i,1)=[y(:)' nan(1,l2)];
                 optimData2(:,:,i)=data2;
                 pos2(i)=l2;
             endfor
-         comparation(m,optimData2,pos2);
+         comparation(m,optimData2,pos2,numberSol);
          plotErrorMatrix(optimData2,pos2);
          [Xnew,Ynew,keepX,out]=plotUniOptimization(Xall,Yall,f,B.autoRemovedOptimization(:,:,counterRem),pos2);
          counterRem=counterRem+1;
@@ -55,38 +57,38 @@ function main()
          [xRaw,X,Z,iterRandom] = defOptimConstBi(A); %Defining constants for optimization calculation and plotting...
          [bestParam x z f f_plot D]=bivariantRetOptim(xRaw,solutesRaw(:,i),X,Z,iterRandom,selectedModel,optimMethod);
          paramMatrix(:,i)=bestParam';
-         [data,l]=prepareComparation(n,f,x,z,D)
-         Xall(:,i,1)=[x(:,1)' zeros(1,l)];%Concentration
-         Xall(:,i,2)=[x(:,2)' zeros(1,l)];%Additive
-         Zall(:,i)=[z(:)' zeros(1,l)];
+         [data,l]=prepareComparation(n,f,x,z,D);
+         Xall(:,i,1)=[x(:,1)' nan(1,l)];%Concentration
+         Xall(:,i,2)=[x(:,2)' nan(1,l)];%Additive
+         Zall(:,i)=[z(:)' nan(1,l)];
          optimData(:,:,i)=data;
          pos(i)=l;
       endfor
-      B.autoOptimization=paramMatrix;
-      comparation(n,optimData,pos);
+      B.autoOptimization=paramMatrix
+      comparation(n,optimData,pos,numberSol);
       plotErrorMatrix(optimData,pos);
-      [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos)
+      [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos,numberSol);
       counterRem=1;%Counter for removed data cycles
       while(out==false)
       m=size(Xnew)(1)
       n=size(Xnew)(2)
-      Xnew
-      clear Xall Zall optimData pos
+      Xnew %Here we havent changed the NaN in the solutes, but only the ones selected are used
+      clear Xall Zall optimData pos paramMatrix
       for i=1:n
          [xRaw,X,Z,iterRandom] = defOptimConstBi([Xnew(:,i,1)(:) Xnew(:,i,2)(:)]); %Defining constants for optimization calculation and plotting...
          [bestParam x z f f_plot D]=bivariantRetOptim(xRaw,Znew(:,i),X,Z,iterRandom,selectedModel,optimMethod);
          paramMatrix(:,i)=bestParam';
-         [data,l]=prepareComparation(n,f,x,z,D)
-         Xall(:,i,1)=[x(:,1)' zeros(1,l)];%Concentration
-         Xall(:,i,2)=[x(:,2)' zeros(1,l)];%Additive
-         Zall(:,i)=[z(:)' zeros(1,l)];
+         [data,l]=prepareComparation(m,f,x,z,D);
+         Xall(:,i,1)=[x(:,1)' nan(1,l)];%Concentration
+         Xall(:,i,2)=[x(:,2)' nan(1,l)];%Additive
+         Zall(:,i)=[z(:)' nan(1,l)];
          optimData(:,:,i)=data;
          pos(i)=l;
       endfor
-      B.autoRemovedOptimization=paramMatrix;
-      comparation(n,optimData,pos);
+      B.autoRemovedOptimization=paramMatrix
+      comparation(m,optimData,pos);
       plotErrorMatrix(optimData,pos);
-      [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos)
+      [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos,numberSol);
       counterRem=1;%Counter for removed data cycles
       endwhile
     endif

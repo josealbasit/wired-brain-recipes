@@ -1,5 +1,5 @@
 function R=f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel)
-  if(sum(p'<lim(:,1))>.5|sum(p'>lim(:,2))>.5)
+  if((sum(p'<lim(:,1))>.5)||(sum(p'>lim(:,2))>.5))
     R=1e32;
   else
     switch(selectedModel)

@@ -1,4 +1,4 @@
-function [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos)
+function [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos,numberSol)
    finish=false;
    out=false;
    counter=0;
@@ -11,7 +11,7 @@ function [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatr
    keepX=ones(size(Xall(:,:,1)))
    solLabels=cell(n+1,1);
    for i=1:n
-     solLabels{i,1}= ["Solute " num2str(i)];
+     solLabels{i,1}= ["Solute " num2str(numberSol(i))];
    endfor
    solLabels{n+1,1}="None. Finish selection";
    while(removeData==true)
@@ -19,17 +19,21 @@ function [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatr
    if(R!=n+1)
    finish=false;
    counter=0;
+   reds=find(keepX(:,R)==0);
+   clf
    h=figure(1,"position",get(0,"screensize")([3,4,3,4]).*[0 0.1 0.9 0.8])
    subplot(2,1,1)
    contourf(X,Z,f_plot(optimParam(:,R)));
    hold on
-   plot(Xall(:,R,1),Xall(:,R,2),'gd')
-   plot(Xall(:,R,1),Xall(:,R,2),'g.')
+   plot(Xall(1:end-pos(R),R,1),Xall(1:end-pos(R),R,2),'gd')
+   plot(Xall(1:end-pos(R),R,1),Xall(1:end-pos(R),R,2),'g.')
+   plot(Xall(1:end-pos(R),R,1)(reds),Xall(1:end-pos(R),R,2)(reds),'rd')
+   plot(Xall(1:end-pos(R),R,1)(reds),Xall(1:end-pos(R),R,2)(reds),'r.')
    subplot(2,1,2)
    surf(X,Z,f_plot(optimParam(:,R)));
    hold on
    scatter3(Xall(:,R,1),Xall(:,R,2),Zall(:,R), 'filled')
-   title("Select data from left-hand side plot to perform new optimization");
+   title("Select data from left-hand side plot to perform new optimization",["Solute " num2str(numberSol(R))]);
     while(finish==false && counter<(6*n+1))
       [x_coord,y_coord,button]=ginput(1)
       if(button==3)
@@ -37,9 +41,6 @@ function [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatr
       elseif(button==1)
       position=returnClosest(Xall(:,R,1),x_coord)
       if(length(position)>1)
-        y_coord
-        Xall
-        Xall(position,R,2)
         pos2=returnClosest(Xall(position,R,2),y_coord)
         position=position(pos2)
       endif
@@ -72,9 +73,10 @@ function [Xnew,Znew,keepX,out]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatr
           w=[w i];
         endif
     end
-    w
-    Xnew(:,:,1)=Xall(:,:,1).*keepX
-    Xnew(:,:,2)=Xall(:,:,2).*keepX
+    numberSol=1:size(Xall)(2);
+    numberSol(w)=[];
+    Xnew(:,:,1)=Xall(:,:,1).*keepX;
+    Xnew(:,:,2)=Xall(:,:,2).*keepX;
     Xnew(:,w,:)=[];
     Znew=Zall.*keepX;
     Znew(:,w,:)=[];

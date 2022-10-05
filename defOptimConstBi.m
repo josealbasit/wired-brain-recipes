@@ -11,5 +11,5 @@ function [x,X,Y,iter] = defOptimConstBi(A) %Creating constant needed for optimiz
   y_plot=linspace(A(:,2)(a),A(:,2)(b),75);
   endif
   [X,Y]=meshgrid(x_plot,y_plot);
-  iter=3;
+  iter=2;
 end

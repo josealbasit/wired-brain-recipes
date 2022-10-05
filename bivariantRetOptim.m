@@ -13,9 +13,9 @@ function [bestParam x z f f_plot D]=bivariantRetOptim(xRaw,zRaw,X,Y,iterRandom,s
   randomParameters=generateRandomParameters(empiricalParam,iterRandom);
   for i=1:iterRandom
     initParam=randomParameters(:,i)';
-    [optimParam r2 errorOptim]=optimizationProcess(x,z,f_min,f,initParam,3)
+    [optimParam r2 errorOptim]=optimizationProcess(x,z,f_min,f,initParam,3);
     r=rand;
-    if (r>.99)
+    if (r>.8)
     retentionBiPlot(X,Y,f_plot,initParam,optimParam,1); %Plotting results...
     endif
     B(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
@@ -31,13 +31,13 @@ function [bestParam x z f f_plot D]=bivariantRetOptim(xRaw,zRaw,X,Y,iterRandom,s
       initParam=estimParameters(:,i);
       [optimParam r2 errorOptim]=optimizationProcess(x,z,f_min,f,initParam,optimMethod);
       r=rand();
-      if (r>.99)
+      if (r>.8)
       retentionBiPlot(X,Y,f_plot,initParam,optimParam,1); %Plotting results...
       endif
       C(i,:)=[initParam(:)' optimParam(:)' errorOptim r2]; %Storing optimized values
     endfor
-    D=[D;C]
+    D=[D;C];
     endfor
    posOptimError=find(D(:,l-1)==min(D(:,l-1)));
-   bestParam=D(posOptimError,:)'
+   bestParam=D(posOptimError,:)';
 endfunction

@@ -10,8 +10,8 @@ function [f_min,f,f_plot,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selected
       if (optimMethod == 1)
       f_min=@(x,p) p(1)./(1+p(2).*x(:,1)+p(3).*x(:,2)+p(4).*x(:,1).*x(:,2));
       else
-      lim=limits(empiricalParam)
-      f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel)
+      lim=limits(empiricalParam);
+      f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel);
       endif
       case 2
     %Equation 2
@@ -22,8 +22,8 @@ function [f_min,f,f_plot,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selected
       if (optimMethod == 1)
       f_min=@(x,p) p(1)./(1+p(2).*x(:,1)+p(3).*x(:,2)+p(4).*x(:,1).*x(:,2)+p(5).*x(:,1).*(sqrt(x(:,2))));
       else
-      lim=limits(empiricalParam)
-      f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel)
+      lim=limits(empiricalParam);
+      f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel);
       endif
       case 3
     %Equation 3
@@ -33,8 +33,8 @@ function [f_min,f,f_plot,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selected
       if (optimMethod==1)
         f_min=@(x,p)[p(1)./(1+p(2).*x(:,2))]./[1+p(3).*[(1+p(4).*x(:,2))./(1+p(2).*x(:,2))].*x(:,1)];
       else
-        lim=limits(empiricalParam)
-        f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel)
+        lim=limits(empiricalParam);
+        f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel);
       endif
       case 4
       %Equation4
@@ -45,8 +45,8 @@ function [f_min,f,f_plot,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selected
       if (optimMethod==1)
         f_min=@(x,p)[[p(1).*(1+p(5).*x(:,2))]./(1+p(2).*x(:,2))]./[1+p(3).*[(1+p(4).*x(:,2))./(1+p(2).*x(:,2))].*x(:,1)];
       else
-        lim=limits(empiricalParam)
-        f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel)
+        lim=limits(empiricalParam);
+        f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel);
       endif
       %empiricalParam(1)=1000; empiricalParam(2)=0.01; empiricalParam(3)=100; empiricalParam(4)=0.2; empiricalParam(5)=-1;
     case 5
@@ -61,8 +61,8 @@ function [f_min,f,f_plot,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selected
         f_min=@(x,p)[p(1).*(1+p(6).*x(:,2))]...
       ./[1+p(4).*x(:,1)+p(2).*x(:,2)+p(3).*x(:,2).^2+p(4).*p(5).*x(:,1).*x(:,2)];
     else
-      lim=limits(empiricalParam)
-      f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel)
+      lim=limits(empiricalParam);
+      f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel);
       endif
       case 6
     %Equation 6
@@ -73,8 +73,8 @@ function [f_min,f,f_plot,empiricalParam]=prepareBiModel(x,x1,x2,z,w,X,Y,selected
       if (optimMethod==1)
         f_min=@(x,p)[p(1)]./[1+p(6).*[(1+p(4).*x(:,2)+p(5).*x(:,2).^2)./(1+p(2).*x(:,2)+p(3).*x(:,2).^2)].*x(:,1)];
       else
-        lim=limits(empiricalParam)
-        f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel)
+        lim=limits(empiricalParam);
+        f_min=@(p)f_bounded_powell_nm_bivariant(p,x1,x2,z,lim,selectedModel);
       endif
       endswitch
   close;
