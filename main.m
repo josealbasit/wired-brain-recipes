@@ -30,9 +30,9 @@ function [B]=main()
            Yall(:,i,1)=[y(:)' nan(1,l)];
          endfor
          B.autoOptimization=paramMatrix;
-         comparation(n,optimData,pos);
-         plotErrorMatrix(optimData,pos);
-         [Xnew,Ynew,keepX,out]=plotUniOptimization(Xall,Yall,f,paramMatrix,pos);
+         comparation(n,optimData,pos,numberSol);
+         plotErrorMatrix(optimData,pos,numberSol);
+         [Xnew,Ynew,keepX,out,numberSol]=plotUniOptimization(Xall,Yall,f,paramMatrix,pos,numberSol);
          counterRem=1;%Counter for removed data cycles
          while(out==false) %User has selected points to remove and perform optimization
             [m,n]=size(Xnew);
@@ -47,8 +47,8 @@ function [B]=main()
                 pos2(i)=l2;
             endfor
          comparation(m,optimData2,pos2,numberSol);
-         plotErrorMatrix(optimData2,pos2);
-         [Xnew,Ynew,keepX,out]=plotUniOptimization(Xall,Yall,f,B.autoRemovedOptimization(:,:,counterRem),pos2);
+         plotErrorMatrix(optimData2,pos2,numberSol);
+         [Xnew,Ynew,keepX,out,numberSol]=plotUniOptimization(Xall,Yall,f,B.autoRemovedOptimization(:,:,counterRem),pos2,numberSol);
          counterRem=counterRem+1;
          endwhile
          %Here data should be saved in case removing points is not helpful for optimization improvement
@@ -66,16 +66,15 @@ function [B]=main()
       endfor
       B.autoOptimization=paramMatrix
       comparation(n,optimData,pos,numberSol);
-      plotErrorMatrix(optimData,pos);
+      plotErrorMatrix(optimData,pos,numberSol);
       [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos,numberSol);
       counterRem=1;%Counter for removed data cycles
       while(out==false)
-      m=size(Xnew)(1)
-      n=size(Xnew)(2)
-      Xnew %Here we havent changed the NaN in the solutes, but only the ones selected are used
+      m=size(Xnew)(1);
+      n=size(Xnew)(2);%Here we havent changed the NaN in the solutes, but only the ones selected are used
       clear Xall Zall optimData pos paramMatrix
       for i=1:n
-         [xRaw,X,Z,iterRandom] = defOptimConstBi([Xnew(:,i,1)(:) Xnew(:,i,2)(:)]); %Defining constants for optimization calculation and plotting...
+         [xRaw,~,~,~] = defOptimConstBi([Xnew(:,i,1)(:) Xnew(:,i,2)(:)]); %Defining constants for optimization calculation and plotting...
          [bestParam x z f f_plot D]=bivariantRetOptim(xRaw,Znew(:,i),X,Z,iterRandom,selectedModel,optimMethod);
          paramMatrix(:,i)=bestParam';
          [data,l]=prepareComparation(m,f,x,z,D);
@@ -85,9 +84,9 @@ function [B]=main()
          optimData(:,:,i)=data;
          pos(i)=l;
       endfor
-      B.autoRemovedOptimization=paramMatrix
-      comparation(m,optimData,pos);
-      plotErrorMatrix(optimData,pos);
+      B.autoRemovedOptimization=paramMatrix;
+      comparation(m,optimData,pos,numberSol);
+      plotErrorMatrix(optimData,pos,numberSol);
       [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot,paramMatrix,pos,numberSol);
       counterRem=1;%Counter for removed data cycles
       endwhile

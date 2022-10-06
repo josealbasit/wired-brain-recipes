@@ -1,7 +1,9 @@
-function [Xnew,Ynew,keepX,out]=plotUniOptimization(X,Y,f,paramMatrix,pos)
+function [Xnew,Ynew,keepX,out,numberSol]=plotUniOptimization(X,Y,f,paramMatrix,pos,numberSol)
    out=false;
+   paramMatrix
    m=(size(paramMatrix)(1)-2)/2;
-   optimParam=paramMatrix(m+1:2*m,:)
+   optimParam=paramMatrix(m+1:2*m,:);
+   Rsquared=paramMatrix(end,:)
    n=size(X)(2)%Number of solutes
    point=zeros(0,2);
    keepX=ones(size(X));
@@ -35,7 +37,7 @@ function [Xnew,Ynew,keepX,out]=plotUniOptimization(X,Y,f,paramMatrix,pos)
     if (i==1)
        legend ([h1 h2],"Experimental Retention Data","Optimized approximation");
     endif
-    title(["Solute " num2str(i)]);
+    title(["Solute " num2str(numberSol(i)) ". R^2= " num2str(Rsquared(i))]);
    end
    S= axes('visible', 'off', 'title', 'Select data to remove',"fontsize",18,"fontweight","bold");
       disp("Select retention data to be removed by clicking close to it on each plot. When you're done, press any key to continue!")
@@ -77,6 +79,7 @@ function [Xnew,Ynew,keepX,out]=plotUniOptimization(X,Y,f,paramMatrix,pos)
           w=[w i];
         endif
       end
+      numberSol(w)=[];
       Xnew(:,w)=[];
       Ynew(:,w)=[];
    endif

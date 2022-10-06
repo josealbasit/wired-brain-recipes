@@ -1,4 +1,4 @@
-function plotErrorMatrix(optimData,pos)
+function plotErrorMatrix(optimData,pos,numberSol)
     colors=[0 0.4470 0.7410
   0.8500 0.3250 0.0980
   0.9290 0.6940 0.1250
@@ -22,7 +22,7 @@ function plotErrorMatrix(optimData,pos)
   endif
   z_col=optimData(:,1,:)(:);
   z0=zeros(1,length(z_col));
-  figure
+  h=figure(2,"position",get(0,"screensize")([3,4,3,4]).*[0.5 0.2 0.4 0.4])
   plot(z_col,z0,'r','DisplayName','Retention Data')
   hold on
   plot(z_col,z0,'+','DisplayName','Experimental Values')
@@ -36,7 +36,7 @@ function plotErrorMatrix(optimData,pos)
     endif
     minim=min(min(errorMatrix));
     maxim=max(max(errorMatrix));
-    label=["Solute " num2str(j)];
+    label=["Solute " num2str(numberSol(j))];
     xplot=repmat(optimData(1:end-pos(j),1,j),1,size(errorMatrix)(2))(:);
     scatter(xplot,errorMatrix(:),25,colors(j,:),'filled','DisplayName',label);
  endfor

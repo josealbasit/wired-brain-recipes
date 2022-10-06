@@ -4,7 +4,8 @@ function [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot
    counter=0;
    removeData=true;
    m=(size(paramMatrix)(1)-2)/2;
-   optimParam=paramMatrix(m+1:2*m,:)
+   optimParam=paramMatrix(m+1:2*m,:);
+   Rsquared=paramMatrix(end,:);
    n=size(Zall)(2);%Number of solutes
    point=zeros(0,2);
    w=zeros(0,0);
@@ -24,6 +25,7 @@ function [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot
    h=figure(1,"position",get(0,"screensize")([3,4,3,4]).*[0 0.1 0.9 0.8])
    subplot(2,1,1)
    contourf(X,Z,f_plot(optimParam(:,R)));
+   title(["Select data to remove from upper plot to perform new optimization for solute " num2str(numberSol(R))]);
    hold on
    plot(Xall(1:end-pos(R),R,1),Xall(1:end-pos(R),R,2),'gd')
    plot(Xall(1:end-pos(R),R,1),Xall(1:end-pos(R),R,2),'g.')
@@ -33,7 +35,7 @@ function [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot
    surf(X,Z,f_plot(optimParam(:,R)));
    hold on
    scatter3(Xall(:,R,1),Xall(:,R,2),Zall(:,R), 'filled')
-   title("Select data from left-hand side plot to perform new optimization",["Solute " num2str(numberSol(R))]);
+   title(["R^2= " num2str(Rsquared(R))]);
     while(finish==false && counter<(6*n+1))
       [x_coord,y_coord,button]=ginput(1)
       if(button==3)
@@ -73,11 +75,10 @@ function [Xnew,Znew,keepX,out,numberSol]=plotOptimization(X,Z,Xall,Zall,f,f_plot
           w=[w i];
         endif
     end
-    numberSol=1:size(Xall)(2);
     numberSol(w)=[];
     Xnew(:,:,1)=Xall(:,:,1).*keepX;
     Xnew(:,:,2)=Xall(:,:,2).*keepX;
-    Xnew(:,w,:)=[];
+    Xnew(:,w,:)=[]
     Znew=Zall.*keepX;
-    Znew(:,w,:)=[];
+    Znew(:,w,:)=[]
     endfunction

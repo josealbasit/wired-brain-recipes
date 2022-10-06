@@ -17,6 +17,7 @@ function comparation(n,optimData,pos,numberSol)
   all_labels="";
   colors=[colors; colors; colors; colors];
   close all;
+  h=figure(1,"position",get(0,"screensize")([3,4,3,4]).*[0.1 0.2 0.4 0.4])
   z_col=optimData(:,1,:)(:);
   plot(z_col,z_col,'r','DisplayName','Retention Data');
   hold on
@@ -43,8 +44,7 @@ function comparation(n,optimData,pos,numberSol)
   soluteLabel=mean([minim maxim]);
   hold on
   label=["Solute " num2str(numberSol(j))];
-  z_predicted
-  xplot=repmat(optimData(1:l,1,j),1,size(z_predicted)(2))(:)
+  xplot=repmat(optimData(1:l,1,j),1,size(z_predicted)(2))(:);
   scatter(xplot,z_predicted(:),25,colors(j,:),'filled','DisplayName',label)
   text(soluteLabel,1.75*soluteLabel,label,'fontsize',12,'fontweight','bold')
   all_labels=[all_labels label];

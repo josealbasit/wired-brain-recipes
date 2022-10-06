@@ -1,13 +1,12 @@
-function ui_interfaceUniManual(selectedModel,x,x_plot,y0,f_min,f,f_plot,initParam)
+function ui_interfaceUni3p(selectedModel,x,x_plot,y0,f_min,f,f_plot,initParam)
+  pkg load optim
 selectedModelstr=num2str(selectedModel);
 close all
 clear h
-
+n=length(initParam)
 %graphics_toolkit qt
-
 h.ax = axes ("position", [0.05 0.42 0.5 0.5]);
 h.fcn = @(p) f([initParam]);
-%set (get (h.ax, "title"), "string", equationName);
 r2=0;
 errorOptim=0;
 optimParam=initParam;
@@ -34,33 +33,40 @@ function update_plot (obj, init = false)
   endswitch
 
   if (recalc || init)
-    if(recalc)
-    p(1) = get (h.p1_slider, "value");
-    p(2) = get (h.p2_slider, "value");
-    p(3) = get (h.p3_slider, "value");
-    initParam=p;
-    label_1=num2str(p(1));
-    label_2=num2str(p(2));
-    label_3=num2str(p(3));
-    set (h.p1_label, "string",  ["Parameter 1 = " label_1] );
-    set (h.p2_label, "string", ["Parameter 2 = " label_2]);
-    set (h.p3_label, "string", ["Parameter 3 = " label_3]);
-    end
+    if(recalc==true)
+      p(1) = get (h.p1_slider, "value");
+      p(2) = get (h.p2_slider, "value");
+      label_1=num2str(p(1));
+      label_2=num2str(p(2));
+      set (h.p1_label, "string",  ["Parameter 1 = " label_1] );
+      set (h.p2_label, "string", ["Parameter 2 = " label_2]);
+      if(n==3)
+        p(3) = get (h.p3_slider, "value");
+        label_3=num2str(p(3));
+        set (h.p3_label, "string", ["Parameter 3 = " label_3]);
+      end
+    initParam=p
     [optimParam r2 errorOptim]=optimizationProcess(x,y0,f_min,f,initParam,1)
+    end
     initParam
     set(h.p1_optim,"string",["Optimal Parameter 1 = " num2str(optimParam(1))]);
     set(h.p2_optim,"string",["Optimal Parameter 2 = " num2str(optimParam(2))]);
-    set(h.p3_optim,"string",["Optimal Parameter 3 = " num2str(optimParam(3))]);
+    if(n==3)
+      set(h.p3_optim,"string",["Optimal Parameter 3 = " num2str(optimParam(3))]);
+    end
     set(h.statistics_r2,"string",["R^2=" num2str(r2)]);
     set(h.statistics_error,"string",["Error optim= " num2str(errorOptim)]);
     y_optim_plot=f_plot(optimParam);
+
     if (init)
-    label_1=num2str(initParam(1));
-    label_2=num2str(initParam(2));
-    label_3=num2str(initParam(3));
-    set (h.p1_label, "string",  ["Parameter 1 = " label_1] );
-    set (h.p2_label, "string", ["Parameter 2 = " label_2]);
-    set (h.p3_label, "string", ["Parameter 3 = " label_3]);
+      label_1=num2str(initParam(1));
+      label_2=num2str(initParam(2));
+      set (h.p1_label, "string",  ["Parameter 1 = " label_1] );
+      set (h.p2_label, "string", ["Parameter 2 = " label_2]);
+      if(n==3)
+        label_3=num2str(initParam(3));
+        set (h.p3_label, "string", ["Parameter 3 = " label_3]);
+      end
       h.plot = plot (x , y0,'+');
       hold on
       h.plot = plot(x_plot,y_optim_plot,'r')
@@ -85,20 +91,33 @@ function update_plot (obj, init = false)
     else
       mstyle = mstyle(2);
     endif
-
-    set (h.plot, "color", merge (cb_red, [1 0 0 ], [0 0 1]),
+    set (h.plot, "color", merge (cb_red, [1 0 0], [0 0 1]),
                  "linestyle", lstyle,
                  "marker", mstyle);
   endif
 
 endfunction
-
-
+h.position=get(0,"screensize")([3,4,3,4]).*[0.1 0.1 0.8 0.8]
+%set(h,"position",get(0,"screensize")([3,4,3,4]).*[0.1 0.1 0.8 0.8])
 ## plot title
-if (selectedModel==1)
-  equationName="Quadratic";
-
-endif
+switch(selectedModel)
+  case 1
+  equationName="Linear SS";
+  case 2
+  equationName="Quadratic SS";
+  case 3
+  equationName="Neue/Polarity ";
+  case 4
+  equationName="Neue-Kuss";
+  case 5
+  equationName="Jandera 2p";
+  case 6
+  equationName="Jandera 3p";
+  case 7
+  equationName="Elution g";
+  case 8
+  equationName="Micelar";
+endswitch
 
 ##Label
 
@@ -150,7 +169,7 @@ h.p2_label = uicontrol ("style", "text",
                            "horizontalalignment", "left",
                            "fontsize",12,
                            "fontweight","bold",
-                           "position", [0.05 0.15 0.35 0.08]);
+                           "position",[0.45 0.3 0.35 0.08] );
 
 h.p2_slider = uicontrol ("style", "slider",
                             "Min" , -100,
@@ -160,16 +179,16 @@ h.p2_slider = uicontrol ("style", "slider",
                             "string", "slider",
                             "callback",@update_plot,
                             "value", initParam(2),
-                            "position", [0.05 0.1 0.35 0.06]);
+                            "position", [0.45 0.25 0.35 0.06]);
 % p3
-
+if(n==3)
 h.p3_label = uicontrol ("style", "text",
                            "units", "normalized",
                            "string", "Parameter 3",
                            "horizontalalignment", "left",
                            "fontsize",12,
                            "fontweight","bold",
-                           "position", [0.45 0.3 0.35 0.08]);
+                           "position",[0.05 0.15 0.35 0.08] );
 
 h.p3_slider = uicontrol ("style", "slider",
                             "Min" , -100,
@@ -179,8 +198,12 @@ h.p3_slider = uicontrol ("style", "slider",
                             "string", "slider",
                             "callback", @update_plot,
                             "value", initParam(3),
-                            "position", [0.45 0.25 0.35 0.06]);
-
+                            "position",[0.05 0.1 0.35 0.06] );
+end
+if(n==2)
+h.p3_label= zeros(0,0)
+h.p3_slider=zeros(0,0)
+end
 h.statistics = uicontrol ("style", "text",
                            "units", "normalized",
                            "string", "Statistics:",
@@ -216,76 +239,17 @@ h.p2_optim = uicontrol ("style", "text",
                            "string", ["Optimal parameter 2 =  " num2str(initParam(2)) ],
                            "horizontalalignment", "left",
                            "position", [0.6 0.64 0.2 0.05]);
+if(n==3)
 h.p3_optim = uicontrol ("style", "text",
                            "units", "normalized",
                            "string", ["Optimal parameter 1 = " num2str(initParam(3)) ],
                            "horizontalalignment", "left",
                            "position", [0.6 0.6 0.2 0.05]);
-
-## linecolor
-%h.linecolor_label = uicontrol ("style", "text",
-%                               "units", "normalized",
-%                               "string", "Linecolor:",
-%                               "horizontalalignment", "left",
-%                               "position", [0.05 0.12 0.35 0.08]);
-%
-%h.linecolor_radio_blue = uicontrol ("style", "radiobutton",
-%                                    "units", "normalized",
-%                                    "string", "blue",
-%%                                    "callback", @update_plot,
-%                                    "position", [0.05 0.08 0.15 0.04]);%
-
-%h.linecolor_radio_red = uicontrol ("style", "radiobutton",
- %                                  "units", "normalized",
-  %                                 "string", "red",
-   %                                "callback", @update_plot,
-    %                               "value", 0,
-     %                              "position", [0.05 0.02 0.15 0.04]);
-
-## linestyle
-%h.linestyle_label = uicontrol ("style", "text",
- %                              "units", "normalized",
-  %                             "string", "Linestyle:",
-   %                            "horizontalalignment", "left",
-    %                           "position", [0.25 0.12 0.35 0.08]);
-%
-%h.linestyle_popup = uicontrol ("style", "popupmenu",
- %                              "units", "normalized",
-  %                             "string", {"-  solid lines",
-   %                                       "-- dashed lines",
-    %                                      ":  dotted lines",
-     %                                     "-. dash-dotted lines"},
-      %                         "callback", @update_plot,
-       %                        "position", [0.25 0.05 0.3 0.06]);
-
-## markerstyle
-%h.markerstyle_label = uicontrol ("style", "text",
- %                                "units", "normalized",
-  %                               "string", "Marker style:",
-   %                              "horizontalalignment", "left",
-    %                             "position", [0.58 0.3 0.35 0.08]);
-%
-%h.markerstyle_list = uicontrol ("style", "listbox",
- %                               "units", "normalized",
-  %                              "string", {"none",
-   %                                        "'+' crosshair",
-    %                                       "'o'  circle",
-     %                                      "'*'  star",
-      %                                     "'.'  point",
-       %                                    "'x'  cross",
-        %                                   "'s'  square",
-         %                                  "'d'  diamond",
-          %                                 "'^'  upward-facing triangle",
-           %                                "'v'  downward-facing triangle",
-            %                               "'>'  right-facing triangle",
-             %                              "'<'  left-facing triangle",
-              %                             "'p'  pentagram",
-               %                            "'h'  hexagram"},
-                %                "callback", @update_plot,
-                 %               "position", [0.58 0.04 0.38 0.26]);
+end
 
 set (gcf, "color", get(0, "defaultuicontrolbackgroundcolor"))
 guidata (gcf, h)
+%set(gcf,"position",get(0,"screensize")([3,4,3,4]).*[0.1 0.1 0.8 0.9])
 update_plot (gcf, true);
 waitforbuttonpress()
 end
